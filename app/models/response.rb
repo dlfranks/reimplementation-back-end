@@ -86,9 +86,9 @@ class Response < ApplicationRecord
           question: {
             id: score.question.id,
             txt: score.question.txt,
-            type: score.type,
-            seq: score.seq,
-            questionnaire_id: score.question_id
+            question_type: score.question.question_type,
+            seq: score.question.seq,
+            questionnaire_id: score.question.questionnaire_id
           }
         }
       end

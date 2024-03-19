@@ -2,22 +2,35 @@ require 'response_helper'
 class Api::V1::ResponsesController < ApplicationController
   include ResponseHelper
   def show
-    response = Response.find(params[:id])
-    response = response.set_content(params, "show")
-    render json: response.serialize_response, status: :ok
+    begin
+      response = Response.find(params[:id])
+      unless response.present?
+        render json: "Not found", status: :not_found
+      end
+      response = response.set_content(params, "show")
+      render json: response.serialize_response, status: :ok
+    rescue StandardError
+      render json: "Request failed. #{$ERROR_INFO}", status: :unprocessable_entity
+    end
   end
 
   def new
-    response = Response.new
-    response.map_id = params[:map_id]
-    response.set_content(params, 'new')
-    if response.errors.full_messages.length > 0
-      error_message = ""
-      response.errors.each {|e| error_message += e + "\n"}
-      render json: {error: error_message}, status: :ok
-    else
-      
-      render json:response.serialize_response, status: :ok
+    begin
+      unless params[:map_id].present?
+        render json: "Not found", status: :not_found
+      end
+      response = Response.new
+      response.map_id = params[:map_id]
+      response.set_content(params, 'new')
+      if response.errors.full_messages.length > 0
+        error_message = ""
+        response.errors.each {|e| error_message += e + "\n"}
+        render json: {error: error_message}, status: :unprocessable_entity
+      else
+        render json:response.serialize_response, status: :ok
+      end
+    rescue StandardError
+      render json: "Request failed. #{$ERROR_INFO}", status: :unprocessable_entity
     end
   end
 
@@ -25,9 +38,7 @@ class Api::V1::ResponsesController < ApplicationController
     begin
       is_submitted = params[:response][:is_submitted]
       response = Response.new
-      
       response.validate(params, "create")
-
       # only notify if is_submitted changes from false to true
       if response.errors.full_messages.length == 0
         response.save
@@ -42,7 +53,7 @@ class Api::V1::ResponsesController < ApplicationController
         render json: { message: "Your response id #{response.id} was successfully saved."}, status: :created
       else
         error_msg = response.errors.full_messages.join('\n')
-        render json: error_msg, status: :ok
+        render json: error_msg, status: :unprocessable_entity
       end
     rescue StandardError
       render json: "Request failed. #{$ERROR_INFO}", status: :unprocessable_entity
@@ -57,7 +68,7 @@ class Api::V1::ResponsesController < ApplicationController
   # redirect_to action: 'redirect', id: @map.map_id, return: 'locked', error_msg: 
   def edit
     begin
-      response = Response.find(params[:id])
+      response = Response.find(params[:response][:id])
       response.set_content(params, 'edit')
       if response.response_map.team_reviewing_enabled
         response = Lock.get_lock(response, current_user, Lock::DEFAULT_TIMEOUT)
@@ -70,7 +81,7 @@ class Api::V1::ResponsesController < ApplicationController
       if response.errors.full_messages.length > 0
         error_message = ""
         response.errors.each {|e| error_message += e + "\n"}
-        render json: {error: error_message}, status: :ok
+        render json: {error: error_message}, status: :unprocessable_entity
       else
         questions = get_questions(response)
         response.scores = get_answers(response, questions)
