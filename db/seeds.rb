@@ -172,17 +172,18 @@ student4 = User.find_or_create_by(name: 'david') do |user|
     institution: institution
   )
 end
-assignment1 = Assignment.find_or_create_by(name: 'Test Assignment1') do |assignment|
+assignment1 = Assignment.find_or_create_by(id: 1) do |assignment|
   assignment.update!(
     id:1,
     name: 'Test Assignment1',
+    instructor_id: instructor.id,
     rounds_of_reviews: 1
   )
 end
-assignment2 = Assignment.find_or_create_by(name: 'Test Assignment2') do |assignment|
+assignment2 = Assignment.find_or_create_by(id: 2) do |assignment|
   assignment.update!(
     id:2,
-    name: 'Test Assignment1',
+    name: 'Test Assignment2',
     instructor_id: instructor.id,
     rounds_of_reviews: 1
     )
@@ -314,7 +315,7 @@ questionnaire2 = Questionnaire.find_or_create_by(name: 'questionnaire 2') do |qu
     max_question_score:5,
     min_question_score:0,
     name: 'questionnaire 2',
-    type: "MetareviewQuestionnaire"
+    type: "ReviewQuestionnaire"
   )
 end
 assignment_questionnaire1 = AssignmentQuestionnaire.find_or_create_by(id:1) do |assignment_questionnaire|
@@ -406,7 +407,6 @@ response_map1 = ResponseMap.find_or_create_by(reviewer_id:participant1.id) do |r
     reviewed_object_id:assignment1.id,
     reviewer_id:participant1.id,
     reviewee_id:team2.id,
-    assignment_questionnaire_id:assignment_questionnaire1.id,
     type: 'ReviewResponseMap'
     )
 end
