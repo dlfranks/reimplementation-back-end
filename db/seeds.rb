@@ -175,15 +175,24 @@ end
 assignment1 = Assignment.find_or_create_by(name: 'Test Assignment1') do |assignment|
   assignment.update!(
     id:1,
-    name: 'Test Assignment1'
+    name: 'Test Assignment1',
+    rounds_of_reviews: 1
   )
+end
+assignment2 = Assignment.find_or_create_by(name: 'Test Assignment2') do |assignment|
+  assignment.update!(
+    id:2,
+    name: 'Test Assignment1',
+    instructor_id: instructor.id,
+    rounds_of_reviews: 1
+    )
 end
 team1 = Team.find_or_create_by(id: 1) do |team|
   team.update!(
     id: 1,
     name:"Team1",
-    parent_id: assignment1.id,
-  )
+    parent_id: assignment1.id
+    )
 end
 team2 = Team.find_or_create_by(id: 2) do |team|
   team.update!(
@@ -293,7 +302,19 @@ questionnaire1 = Questionnaire.find_or_create_by(name: 'questionnaire 1') do |qu
     instructor_id:instructor.id,
     max_question_score:5,
     min_question_score:0,
-    name: 'questionnaire 1'
+    name: 'questionnaire 1',
+    type: "ReviewQuestionnaire"
+  
+  )
+end
+questionnaire2 = Questionnaire.find_or_create_by(name: 'questionnaire 2') do |questionnaire|
+  questionnaire.update!(
+    id:2,
+    instructor_id:instructor.id,
+    max_question_score:5,
+    min_question_score:0,
+    name: 'questionnaire 2',
+    type: "MetareviewQuestionnaire"
   )
 end
 assignment_questionnaire1 = AssignmentQuestionnaire.find_or_create_by(id:1) do |assignment_questionnaire|
@@ -302,7 +323,20 @@ assignment_questionnaire1 = AssignmentQuestionnaire.find_or_create_by(id:1) do |
     assignment_id:assignment1.id,
     questionnaire_id:questionnaire1.id,
     topic_id:sign_up_topic1.id,
-    notification_limit: 3
+    notification_limit: 3,
+    used_in_round: 1,
+    duty_id: nil
+  )
+end
+assignment_questionnaire2 = AssignmentQuestionnaire.find_or_create_by(id:2) do |assignment_questionnaire|
+  assignment_questionnaire.update!(
+    id:2,
+    assignment_id:assignment2.id,
+    questionnaire_id:questionnaire2.id,
+    topic_id:sign_up_topic2.id,
+    notification_limit: 3,
+    used_in_round: 1,
+    duty_id: 1
   )
 end
 question1 = Question.find_or_create_by(txt:'This is a question 1') do |question|
@@ -346,11 +380,11 @@ question4 = Question.find_or_create_by(txt:'This is a question 4') do |question|
     question_type:'Dropdown',
     max_label: 'max_label4',
     min_label: 'min_label4',
-    txt: 'This is a question 4',
+    txt: 'This is a question 4 based on duty',
     weight: 5,
     seq: 4.0,
     break_before: 2,
-    questionnaire: questionnaire1
+    questionnaire: questionnaire2
   )
 end
 question5 = Question.find_or_create_by(txt:'This is a question 5') do |question|
@@ -358,11 +392,11 @@ question5 = Question.find_or_create_by(txt:'This is a question 5') do |question|
     question_type:'TextArea',
     max_label: 'max_label5',
     min_label: 'min_label5',
-    txt: 'This is a question 5',
+    txt: 'This is a question 5 based on duty',
     weight: 5,
     seq: 5.0,
     break_before: 2,
-    questionnaire: questionnaire1
+    questionnaire: questionnaire2
   )
 end
 

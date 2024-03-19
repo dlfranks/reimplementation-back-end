@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Response, type: :model do
-  let(:response_map) {
+  let(:review_response_map) {
     ResponseMap.new(id: 1, reviewed_object_id: 1, reviewer_id: 1, reviewee_id: 2, type:'ReviewResponseMap',
                     calibrate_to: false, team_reviewing_enabled: false, assignment_questionnaire_id: 1 ) }
   let(:response) {
@@ -10,6 +10,7 @@ RSpec.describe Response, type: :model do
   let(:answer) { Answer.new(id: 1, answer: 5, comments: 'Answer comment', question_id: 1) }
   let(:question) { Question.new(id: 1, weight: 2) }
   let(:assignment_questionnaire) { AssignmentQuestionnaire.new(id: 1, assignment_id: 1, questionnaire_id: 1) }
+  
   let(:params) do
     {
       map_id: 1,
@@ -100,8 +101,17 @@ RSpec.describe Response, type: :model do
     end
   end
 
+  describe "get geations by response" do
+    
+  end
   # #set_content method
   describe "#set_content" do
+    it "get_question by response" do
+      params= {id: 1}
+      response = Response.find(params[:id])
+      response.get_question(response)
+      expect(response.errors.full_messages.length).to eq(0)
+    end
     it "sets the response content based on provided response id" do
       params= {id: 1}
       response = Response.find(params[:id])
