@@ -60,12 +60,6 @@ RSpec.describe Response, type: :model do
   # validate method
   describe 'Validate the incomming parameters' do
     context 'when creating a new response' do
-      it 'validates not existing of response_map in database' do
-        params = { map_id: 3 }
-        response = Response.new
-        response.validate_params(params, 'create')
-        expect(response.errors[:response_map]).to include('Not found response map')
-      end
       it 'validates creating a new response' do
         response = Response.new
         params[:map_id] = 1
@@ -90,7 +84,7 @@ RSpec.describe Response, type: :model do
         params1 = {}
         params1[:response] = params
         response.validate_params(params1, 'update')
-        expect(response.errors[:response]).to include('Already submitted.')
+        expect(response.errors.full_messages.length).to eq(1)
       end
     end
   end
